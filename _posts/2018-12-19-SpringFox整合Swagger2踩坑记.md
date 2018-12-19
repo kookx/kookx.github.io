@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SpringMVC+SpringFox+Swagger2踩坑记
+title: SpringFox+Swagger2踩坑记
 category: Blog
 tags: [Swagger2,SpringFox]
 ---
