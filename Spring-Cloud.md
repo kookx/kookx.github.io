@@ -2,8 +2,8 @@
 layout: default
 title: Spring Cloud Projects
 menu: Spring-Cloud
-css: ['open-source.css']
+css: ['spring-cloud.css']
 javascript: ['underscore-min.js']
 ---
 
-{% include open-source-page.html %}
+{% include spring-cloud-page.html %}
