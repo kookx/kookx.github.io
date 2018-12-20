@@ -61,16 +61,16 @@ navs:
     label: Home
 
   -
-    href: /open-source
-    label: Open-Source
+    href: /Spring-Cloud
+    label: Spring-Cloud
+
+  -
+    href: /Kubernetes
+    label: Kubernetes
 
   -
     href: /blog
     label: Blog
-
-  -
-    href: /bookmark
-    label: Bookmark
 
   -
     href: /about
