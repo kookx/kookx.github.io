@@ -1,4 +1,11 @@
-# Springfox和BeanPostProcessor原理分析
+---
+layout: post
+title: Springfox和BeanPostProcessor原理分析
+category: Blog
+tags: [Swagger2,SpringFox]
+---
+
+
 
 > springfox如何定义Documentation：
 
