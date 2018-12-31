@@ -291,4 +291,119 @@ public Object postProcessAfterInitialization(Object bean, String beanName) throw
 
 ---
 
-> 
+> BeanPostProcessor是什么
+
+BeanPostProcessor接口作用是：**如果我们需要在Spring容器完成Bean的实例化、配置和其他的初始化前后添加一些自己的逻辑处理，我们就可以定义一个或者多个BeanPostProcessor接口的实现，然后注册到容器中。**
+
+Spring中Bean的实例化过程图示：
+
+![BeanPostProcessor](http://onekook.com/bower_components/extend/images/BeanPostProcesser.jpg)
+
+由上图可以看到，Spring中的BeanPostProcessor在实例化过程处于的位置，BeanPostProcessor接口有两个方法需要实现：postProcessBeforeInitialization和postProcessAfterInitialization
+
+```java
+import org.springframework.beans.factory.config.BeanPostProcessor;  
+   
+public class MyBeanPostProcessor implements BeanPostProcessor {  
+   
+     public MyBeanPostProcessor() {  
+        super();  
+        System.out.println("这是BeanPostProcessor实现类构造器！！");          
+     }  
+   
+     @Override  
+     public Object postProcessAfterInitialization(Object bean, String arg1)  
+             throws BeansException {  
+         System.out.println("bean处理器：bean创建之后..");  
+         return bean;  
+     }  
+   
+     @Override  
+     public Object postProcessBeforeInitialization(Object bean, String arg1)  
+             throws BeansException {  
+         System.out.println("bean处理器：bean创建之前..");  
+       
+         return bean;  
+     }  
+ }  
+```
+
+BeanPostProcessor接口定义如下：
+
+```java
+public interface BeanPostProcessor {  
+  
+    /** 
+     * Apply this BeanPostProcessor to the given new bean instance <i>before</i> any bean 
+     * initialization callbacks (like InitializingBean's {@code afterPropertiesSet} 
+     * or a custom init-method). The bean will already be populated with property values.    
+     */  
+//实例化、依赖注入完毕，在调用显示的初始化之前完成一些定制的初始化任务  
+    Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException;  
+  
+      
+    /** 
+     * Apply this BeanPostProcessor to the given new bean instance <i>after</i> any bean 
+     * initialization callbacks (like InitializingBean's {@code afterPropertiesSet}   
+     * or a custom init-method). The bean will already be populated with property values.       
+     */  
+//实例化、依赖注入、初始化完毕时执行  
+    Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException;  
+  
+}  
+```
+
+由方法名字也可以看出，前者在实例化及依赖注入完成后、在任何初始化代码（比如配置文件中的init-method）调用之前调用；后者在初始化代码调用之后调用。
+
+注意：
+
+1、接口中的两个方法都要将传入的bean返回，而不能返回null，如果返回的是null那么我们通过getBean方法将得不到目标。
+
+2、BeanFactory和ApplicationContext对待bean后置处理器稍有不同。ApplicationContext会自动检测在配置文件中实现了BeanPostProcessor接口的所有bean，并把它们注册为后置处理器，然后在容器创建bean的适当时候调用它，因此部署一个后置处理器同部署其他的bean并没有什么区别。而使用BeanFactory实现的时候，bean 后置处理器必须通过代码显式地去注册，在IoC容器继承体系中的ConfigurableBeanFactory接口中定义了注册方法：
+
+```java
+/**  
+ * Add a new BeanPostProcessor that will get applied to beans created  
+ * by this factory. To be invoked during factory configuration.  
+ * <p>Note: Post-processors submitted here will be applied in the order of  
+ * registration; any ordering semantics expressed through implementing the  
+ * {@link org.springframework.core.Ordered} interface will be ignored. Note  
+ * that autodetected post-processors (e.g. as beans in an ApplicationContext)  
+ * will always be applied after programmatically registered ones.  
+ * @param beanPostProcessor the post-processor to register  
+ */    
+void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);  
+```
+
+另外，不要将BeanPostProcessor标记为延迟初始化。因为如果这样做，Spring容器将不会注册它们，自定义逻辑也就无法得到应用。假如你在<beans />元素的定义中使用了'default-lazy-init'属性，请确信你的各个BeanPostProcessor标记为'lazy-init="false"'。
+
+> InstantiationAwareBeanPostProcessor
+
+InstantiationAwareBeanPostProcessor是BeanPostProcessor的子接口，可以在Bean生命周期的另外两个时期提供扩展的回调接口，即实例化Bean之前（调用postProcessBeforeInstantiation方法）和实例化Bean之后（调用postProcessAfterInstantiation方法），该接口定义如下：
+
+```java
+package org.springframework.beans.factory.config;    
+    
+import java.beans.PropertyDescriptor;    
+    
+import org.springframework.beans.BeansException;    
+import org.springframework.beans.PropertyValues;    
+    
+public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {    
+    
+    Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException;    
+    
+    boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException;    
+    
+    PropertyValues postProcessPropertyValues(    
+            PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName)    
+            throws BeansException;    
+    
+}  
+```
+
+其使用方法与上面介绍的BeanPostProcessor接口类似，只时回调时机不同。
+
+如果是使用ApplicationContext来生成并管理Bean的话则稍有不同，使用ApplicationContext来生成及管理Bean实例的话，在执行BeanFactoryAware的setBeanFactory()阶段后，若Bean类上有实现org.springframework.context.ApplicationContextAware接口，则执行其setApplicationContext()方法，接着才执行BeanPostProcessors的ProcessBeforeInitialization()及之后的流程。
+
+以上内容转载自：[CSDN](https://uule.iteye.com/blog/2094549)
