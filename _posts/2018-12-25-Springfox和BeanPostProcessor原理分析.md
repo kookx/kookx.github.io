@@ -271,7 +271,15 @@ public ResponseEntity<Json> getDocumentation(
 影响主要有2点：
 
 1. 应用启动速度变慢，因为额外加载了springfox中的信息，同时内存中也缓存了这些API信息
-2. 多了一个HandlerMapping，并且优先级高。以下是springboot应用DispatcherServlet的HandlerMapping集合。`其中springfox构造的PropertySourcedRequestMappingHandlerMapping优先级最高`。优先级最高说明第一次查询映射关系都是走PropertySourcedRequestMappingHandlerMapping，而程序中大部分请求都是在RequestMappingHandlerMapping中处理的,如下图：
+2. 多了一个HandlerMapping，并且优先级高。`其中springfox构造的PropertySourcedRequestMappingHandlerMapping优先级最高`。优先级最高说明第一次查询映射关系都是走PropertySourcedRequestMappingHandlerMapping，而程序中大部分请求Path路径都映射到RequestMappingHandlerMapping中处理的,所以进入到PropertySourcedRequestMappingHandlerMapping处理的请求会报：
+
+   ![did not find handler](http://onekook.com/bower_components/extend/images/did%20not%20find%20handler.png)
+
+   而默认的path值为/v2/api-docs则会成功处理：
+
+   ![success-find-handler](http://onekook.com/bower_components/extend/images/success-find-handler.png)
+
+   以下是springboot应用DispatcherServlet的HandlerMapping集合：
 
 ![PropertySourcedRequestMappingHandlerMapping优先级](http://kookone.github.io/bower_components/extend/images/PropertySourcedRequestMappingHandlerMapping.jpg)
 
@@ -303,7 +311,9 @@ Spring中Bean的实例化过程图示：
 
 ```java
 import org.springframework.beans.factory.config.BeanPostProcessor;  
-   
+
+//让Spring加载到该类
+@Component
 public class MyBeanPostProcessor implements BeanPostProcessor {  
    
      public MyBeanPostProcessor() {  
