@@ -59,3 +59,133 @@ SpringfoxWebMvcConfiguration配置类做的事情跟Swagger2DocumentationConfigu
     ApiListingScannerPlugin.class
 })
 ```
+
+@EnablePluginRegistries注解是spring-plugin模块提供的一个基于Plugin类型注册PluginRegistry实例到Spring上下文的注解。
+
+@EnablePluginRegistries注解内部使用PluginRegistriesBeanDefinitionRegistrar注册器去获取注解的value属性(类型为Plugin接口的Class数组)；然后遍历这个Plugin数组，针对每个Plugin在Spring上下文中注册PluginRegistryFactoryBean，并设置相应的name和属性。
+
+如果处理的Plugin有@Qualifier注解，那么这个要注册的PluginRegistryFactoryBean的name就是@Qualifier注解的value，否则name就是插件名首字母小写+Registry的格式(比如DocumentationPlugin对应构造的bean的name就是documentationPluginRegistry)。
+
+PluginRegistriesBeanDefinitionRegistrar注册器处理过程：
+
+```
+@Override
+public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+
+   Class<?>[] types = (Class<?>[]) importingClassMetadata.getAnnotationAttributes(
+         EnablePluginRegistries.class.getName()).get("value");
+
+   for (Class<?> type : types) {
+
+      BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(PluginRegistryFactoryBean.class);
+      builder.addPropertyValue("type", type);
+
+      AbstractBeanDefinition beanDefinition = builder.getBeanDefinition();
+      Qualifier annotation = type.getAnnotation(Qualifier.class);
+
+      // If the plugin interface has a Qualifier annotation, propagate that to the bean definition of the registry
+      if (annotation != null) {
+         AutowireCandidateQualifier qualifierMetadata = new AutowireCandidateQualifier(Qualifier.class);
+         qualifierMetadata.setAttribute(AutowireCandidateQualifier.VALUE_KEY, annotation.value());
+         beanDefinition.addQualifier(qualifierMetadata);
+      }
+
+      // Default
+      String beanName = annotation == null ? StringUtils.uncapitalize(type.getSimpleName() + "Registry") : annotation
+            .value();
+      registry.registerBeanDefinition(beanName, builder.getBeanDefinition());
+   }
+}
+```
+
+PluginRegistryFactoryBean是一个FactoryBean，其内部真正构造的bean的类型是OrderAwarePluginRegistry。OrderAwarePluginRegistry实例化过程中会调用create静态方法，传入的plugin集合使用aop代理生成一个ArrayList，这个list中的元素就是Spring上下文中所有的类型为之前遍历的Plugin的bean。  
+PluginRegistryFactoryBean的getObject方法：
+
+```java
+public OrderAwarePluginRegistry<T, S> getObject() {
+   return OrderAwarePluginRegistry.create(getBeans());
+}
+protected List<T> getBeans() {
+   ProxyFactory factory = new ProxyFactory(List.class, targetSource);
+   return (List<T>) factory.getProxy();
+}
+```
+
+这里的targetSource是在PluginRegistryFactoryBean的父类AbstractTypeAwareSupport(实现了InitializingBean接口)中的afterPropertiesSet方法中初始化的(type属性在PluginRegistriesBeanDefinitionRegistrar注册器中已经设置为遍历的Plugin)：
+
+```java
+public void afterPropertiesSet() {
+   this.targetSource = new BeansOfTypeTargetSource(context, type, false, exclusions);
+}
+```
+
+BeansOfTypeTargetSource的getTarget方法：
+
+```java
+public synchronized Object getTarget() throws Exception {
+   Collection<Object> components = this.components == null ? getBeansOfTypeExcept(type, exclusions)
+         : this.components;
+
+   if (frozen && this.components == null) {
+      this.components = components;
+   }
+
+   return new ArrayList(components);
+}
+
+private Collection<Object> getBeansOfTypeExcept(Class<?> type, Collection<Class<?>> exceptions) {
+  List<Object> result = new ArrayList<Object>();
+
+  for (String beanName : context.getBeanNamesForType(type, false, eagerInit)) {
+    if (exceptions.contains(context.getType(beanName))) {
+      continue;
+    }
+    result.add(context.getBean(beanName));
+  }
+
+  return result;
+}
+```
+
+举个例子：比如SpringfoxWebMvcConfiguration中的@EnablePluginRegistries注解里的DocumentationPlugin这个Plugin，在处理过程中会找出Spring上下文中所有的Docket(Docket实现了DocumentationPlugin接口)，并把该集合设置成name为documentationPluginRegistry、类型为OrderAwarePluginRegistry的bean，注册到Spring上下文中。
+
+DocumentationPluginsManager类会在之前提到过的配置类中被扫描出来，它内部的各个pluginRegistry属性都是@EnablePluginRegistries注解内部构造的各种pluginRegistry实例：
+
+```java
+@Component
+public class DocumentationPluginsManager {
+  @Autowired
+  @Qualifier("documentationPluginRegistry")
+  private PluginRegistry<DocumentationPlugin, DocumentationType> documentationPlugins;
+  @Autowired
+  @Qualifier("apiListingBuilderPluginRegistry")
+  private PluginRegistry<ApiListingBuilderPlugin, DocumentationType> apiListingPlugins;
+  @Autowired
+  @Qualifier("parameterBuilderPluginRegistry")
+  private PluginRegistry<ParameterBuilderPlugin, DocumentationType> parameterPlugins;
+  ...
+}
+```
+
+DocumentationPluginsBootstrapper启动类也会在之前提供的配置类中被扫描出来。它实现了SmartLifecycle接口，在start方法中，会获取之前初始化的所有documentationPlugins(也就是Spring上下文中的所有Docket)。遍历这些Docket并进行scan扫描(使用RequestMappingHandlerMapping的getHandlerMethods方法获取url与方法的所有映射关系，然后进行一系列API解析操作)，扫描出来的结果封装成Documentation并添加到DocumentationCache中：
+
+```java
+@Override
+public void start() {
+  if (initialized.compareAndSet(false, true)) {
+    log.info("Context refreshed");
+    List<DocumentationPlugin> plugins = pluginOrdering()
+        .sortedCopy(documentationPluginsManager.documentationPlugins());
+    log.info("Found {} custom documentation plugin(s)", plugins.size());
+    for (DocumentationPlugin each : plugins) {
+      DocumentationType documentationType = each.getDocumentationType();
+      if (each.isEnabled()) {
+        scanDocumentation(buildContext(each));
+      } else {
+        log.info("Skipping initializing disabled plugin bean {} v{}",
+            documentationType.getName(), documentationType.getVersion());
+      }
+    }
+  }
+}
+```
