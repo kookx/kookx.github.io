@@ -189,3 +189,106 @@ public void start() {
   }
 }
 ```
+
+![SpringFox API 扫描过程](http://kookone.github.io/bower_components/extend/images/springfox-1.jpg)
+
+下面分析一下HandlerMapping的处理过程。
+
+PropertySourcedRequestMappingHandlerMapping在Swagger2DocumentationConfiguration配置类中被构造：
+
+```java
+@Bean
+public HandlerMapping swagger2ControllerMapping(
+    Environment environment,
+    DocumentationCache documentationCache,
+    ServiceModelToSwagger2Mapper mapper,
+    JsonSerializer jsonSerializer) {
+  return new PropertySourcedRequestMappingHandlerMapping(
+      environment,
+      new Swagger2Controller(environment, documentationCache, mapper, jsonSerializer));
+}
+```
+
+PropertySourcedRequestMappingHandlerMapping初始化过程中会设置优先级为Ordered.HIGHEST_PRECEDENCE + 1000，同时还会根据Swagger2Controller得到RequestMappingInfo映射信息，并设置到handlerMethods属性中。
+
+PropertySourcedRequestMappingHandlerMapping复写了lookupHandlerMethod方法，首先会去handlerMethods属性中查询是否存在对应的映射关系，没找到的话使用下一个HandlerMapping进行处理：
+
+```java
+@Override
+protected HandlerMethod lookupHandlerMethod(String urlPath, HttpServletRequest request) throws Exception {
+  logger.debug("looking up handler for path: " + urlPath);
+  HandlerMethod handlerMethod = handlerMethods.get(urlPath);
+  if (handlerMethod != null) {
+    return handlerMethod;
+  }
+  for (String path : handlerMethods.keySet()) {
+    UriTemplate template = new UriTemplate(path);
+    if (template.matches(urlPath)) {
+      request.setAttribute(
+          HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE,
+          template.match(urlPath));
+      return handlerMethods.get(path);
+    }
+  }
+  return null;
+}
+```
+
+Swagger2Controller中只有一个mapping方法，默认的path值为/v2/api-docs，可以通过配置 springfox.documentation.swagger.v2.path 进行修改。所以默认情况下 /v2/api-docs?group=person-api、/v2/api-docs?group=user-api 这些地址都会被Swagger2Controller所处理。
+
+Swagger2Controller内部获取文档信息会去DocumentationCache中查找：
+
+```java
+@RequestMapping(
+    value = DEFAULT_URL,
+    method = RequestMethod.GET,
+    produces = { APPLICATION_JSON_VALUE, HAL_MEDIA_TYPE })
+@PropertySourcedMapping(
+    value = "${springfox.documentation.swagger.v2.path}",
+    propertyKey = "springfox.documentation.swagger.v2.path")
+@ResponseBody
+public ResponseEntity<Json> getDocumentation(
+    @RequestParam(value = "group", required = false) String swaggerGroup,
+    HttpServletRequest servletRequest) {
+
+  String groupName = Optional.fromNullable(swaggerGroup).or(Docket.DEFAULT_GROUP_NAME);
+  Documentation documentation = documentationCache.documentationByGroup(groupName);
+  if (documentation == null) {
+    return new ResponseEntity<Json>(HttpStatus.NOT_FOUND);
+  }
+  Swagger swagger = mapper.mapDocumentation(documentation);
+  UriComponents uriComponents = componentsFrom(servletRequest, swagger.getBasePath());
+  swagger.basePath(Strings.isNullOrEmpty(uriComponents.getPath()) ? "/" : uriComponents.getPath());
+  if (isNullOrEmpty(swagger.getHost())) {
+    swagger.host(hostName(uriComponents));
+  }
+  return new ResponseEntity<Json>(jsonSerializer.toJson(swagger), HttpStatus.OK);
+}
+```
+
+>  引入springfox带来的影响
+
+影响主要有2点：
+
+1. 应用启动速度变慢，因为额外加载了springfox中的信息，同时内存中也缓存了这些API信息
+2. 多了一个HandlerMapping，并且优先级高。以下是springboot应用DispatcherServlet的HandlerMapping集合。`其中springfox构造的PropertySourcedRequestMappingHandlerMapping优先级最高`。优先级最高说明第一次查询映射关系都是走PropertySourcedRequestMappingHandlerMapping，而程序中大部分请求都是在RequestMappingHandlerMapping中处理的,如下图：
+
+![PropertySourcedRequestMappingHandlerMapping优先级](http://kookone.github.io/bower_components/extend/images/PropertySourcedRequestMappingHandlerMapping.jpg)
+
+优先级问题可以使用BeanPostProcessor处理，修改优先级：
+
+```java
+@Override
+public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    if(beanName.equals("swagger2ControllerMapping")) {
+        ((PropertySourcedRequestMappingHandlerMapping) bean).setOrder(Ordered.LOWEST_PRECEDENCE - 1000);
+    }
+    return bean;
+}
+```
+
+以上内容转载自：[知乎](https://zhuanlan.zhihu.com/p/38245805)
+
+---
+
+> 
