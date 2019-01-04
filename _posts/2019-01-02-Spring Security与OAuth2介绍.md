@@ -37,6 +37,10 @@ OAuth 2协议以及详细说明可以参考以下是相关的文章：
 
 > 第一个疑问： CAS的单点登录和OAuth2的最大区别
 
+SSO ：单点登录（Single sign-on）是在多个应用系统中，用户只需要登录一次就可以访问所有相互信任的应用系统。（来自百度百科）。
+
+CAS ：中央认证服务（Central Authentication Service），一个基于Kerberos票据方式实现SSO单点登录的框架，为Web 应用系统提供一种可靠的单点登录解决方法（属于 Web SSO ）。
+
 1. 
 
 　　CAS的单点登录时保障客户端的用户资源的安全 。
