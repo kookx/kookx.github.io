@@ -93,4 +93,32 @@ OAuth2是一个相对复杂的协议, 有4种授权模式, 其中的`access code
 
 # Spring Security OAuth2
 
-Spring Security OAuth2建立在Spring Security的基础之上，实现了OAuth2的规范
+Spring Security OAuth2建立在Spring Security的基础之上，实现了OAuth2的规范，官方原文链接：**[http://projects.spring.io/spring-security-oauth/docs/oauth2.html](http://projects.spring.io/spring-security-oauth/docs/oauth2.html)**
+
+> Spring OAuth2.0 提供者实现原理
+
+Spring OAuth2.0提供者实际上分为：
+
+- 授权服务 Authorization Service.
+- 资源服务 Resource Service.
+
+虽然这两个提供者有时候可能存在同一个应用程序中，但在Spring Security OAuth中你可以把
+
+他它们各自放在不同的应用上，而且你可以有多个资源服务，它们共享同一个中央授权服
+
+务。
+
+所有获取令牌的请求都将会在Spring MVC controller endpoints中进行处理，并且访问受保护
+
+的资源服务的处理流程将会放在标准的Spring Security请求过滤器中(filters)。
+
+下面是配置一个授权服务必须要实现的endpoints：
+
+- AuthorizationEndpoint：用来作为请求者获得授权的服务，默认的URL是/oauth/authorize.
+- TokenEndpoint：用来作为请求者获得令牌（Token）的服务，默认的URL是/oauth/token.
+
+下面是配置一个资源服务必须要实现的过滤器：
+
+- OAuth2AuthenticationProcessingFilter：用来作为认证令牌（Token）的一个处理流程过滤器。只有当过滤器通过之后，请求者才能获得受保护的资源。
+
+配置提供者（授权、资源）都可以通过简单的Java注解@Configuration来进行适配，你也可以使用基于XML的声明式语法来进行配置，如果你打算这样做的话，那么请使用http://www.springframework.org/schema/security/spring-security-oauth2.xsd来作为XML的schema（即XML概要定义）以及使用http://www.springframework.org/schema/security/oauth2来作为命名空间。
