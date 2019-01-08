@@ -2,4 +2,7 @@ _site
 .sass-cache
 .jekyll-metadata
 .idea
-.DS_Store
+.DS_Store 
+*/.DS_Store
+[core]
+excludesfile = /Users/kook/.gitignore_global 
