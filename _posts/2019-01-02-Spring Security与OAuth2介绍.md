@@ -7,7 +7,7 @@ tags: [Spring Security,OAuth2]
 
 # OAuth2 初识
 
-OAuth2.0是[OAuth](http://en.wikipedia.org/wiki/OAuth)协议的延续版本，OAuth是一个关于授权（authorization）的开放网络标准，但不[向后兼容](https://baike.baidu.com/item/%E5%90%91%E5%90%8E%E5%85%BC%E5%AE%B9/94553)OAuth 1.0即完全废止了OAuth1.0，OAuth 2.0关注客户端开发者的简易性。要么通过组织在资源拥有者和HTTP服务商之间的被批准的交互动作代表用户，要么允许第三方应用代表用户获得访问的权限。同时为Web应用，桌面应用和手机，和起居室设备提供专门的认证流程，在全世界得到广泛应用。
+OAuth2.0是[OAuth](http://en.wikipedia.org/wiki/OAuth)协议的延续版本，OAuth是一个关于授权（authorization）的开放网络标准，但不[向后兼容](https://baike.baidu.com/item/%E5%90%91%E5%90%8E%E5%85%BC%E5%AE%B9/94553)，OAuth 1.0即完全废止了OAuth1.0，OAuth 2.0关注客户端开发者的简易性。要么通过组织在资源拥有者和HTTP服务商之间的被批准的交互动作代表用户，要么允许第三方应用代表用户获得访问的权限。同时为Web应用，桌面应用和手机，和起居室设备提供专门的认证流程，在全世界得到广泛应用。
 
 ### 应用场景
 
@@ -310,7 +310,7 @@ public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws 
 
 主要的maven依赖如下
 
-<!-- 注意是starter,自动配置 -->  
+<!-- 注意是starter,自动配置 -->
 
 <dependency>  
  <groupId>org.springframework.boot</groupId>  
