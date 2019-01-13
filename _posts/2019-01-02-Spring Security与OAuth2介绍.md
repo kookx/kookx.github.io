@@ -85,11 +85,11 @@ OAuth2是一个相对复杂的协议, 有4种授权模式, 其中的`access code
 
 ## Spring Security OAuth2
 
-> #### 什么是Spring Security OAuth2
+> ### 什么是Spring Security OAuth2
 
 Spring Security OAuth2建立在Spring Security的基础之上，实现了OAuth2的规范，官方原文链接：**[http://projects.spring.io/spring-security-oauth/docs/oauth2.html](http://projects.spring.io/spring-security-oauth/docs/oauth2.html)**
 
-> #### Spring OAuth2.0 提供者实现原理
+> ### Spring OAuth2.0 提供者实现原理
 
 Spring OAuth2.0提供者实际上分为：
 
@@ -117,7 +117,7 @@ Spring OAuth2.0提供者实际上分为：
 
 配置提供者（授权、资源）都可以通过简单的Java注解@Configuration来进行适配，你也可以使用基于XML的声明式语法来进行配置，如果你打算这样做的话，那么请使用http://www.springframework.org/schema/security/spring-security-oauth2.xsd来作为XML的schema（即XML概要定义）以及使用http://www.springframework.org/schema/security/oauth2来作为命名空间。
 
-> #### 授权服务配置
+> ### 授权服务配置
 
 配置一个授权服务，你需要考虑几种授权类型（Grant Type），不同的授权类型为客户端（Client）提供了不同的获取令牌（Token）方式，为了实现并确定这几种授权，需要配置使用 ClientDetailsService 和 TokenService 来开启或者禁用这几种授权机制。到这里就请注意了，不管你使用什么样的授权类型（Grant Type），每一个客户端（Client）都能够通过明确的配置以及权限来实现不同的授权访问机制。这也就是说，假如你提供了一个支持"client_credentials"的授权方式，并不意味着客户端就需要使用这种方式来获得授权。下面是几种授权类型的列表，具体授权机制的含义可以参见RFC6749([中文版本](https://github.com/jeansfish/RFC6749.zh-cn))：
 
@@ -236,7 +236,7 @@ protected void configure(HttpSecurity http) throws Exception {
 
 有时候限制令牌的权限范围是很有用的，这不仅仅是针对于客户端，你还可以根据用户的权限来进行限制。如果你使用 DefaultOAuth2RequestFactory 来配置 AuthorizationEndpoint 的话你可以设置一个flag即 checkUserScopes=true来限制权限范围，不过这只能匹配到用户的角色。你也可以注入一个 OAuth2RequestFactory 到 TokenEnpoint 中，不过这只能工作在 password 授权模式下。如果你安装一个 TokenEndpointAuthenticationFilter 的话，你只需要增加一个过滤器到 HTTP BasicAuthenticationFilter 后面即可。当然了，你也可以实现你自己的权限规则到 scopes 范围的映射和安装一个你自己版本的 OAuth2RequestFactory。AuthorizationServerEndpointConfigurer 配置对象允许你注入一个你自定义的 OAuth2RequestFactory，因此你可以使用这个特性来设置这个工厂对象，前提是你使用 @EnableAuthorizationServer 注解来进行配置（见上面介绍的授权服务配置）。
 
-> #### 资源服务配置
+> ### 资源服务配置
 
 一个资源服务（可以和授权服务在同一个应用中，当然也可以分离开成为两个不同的应用程序）提供一些受token令牌保护的资源，Spring OAuth提供者是通过Spring Security authentication filter 即验证过滤器来实现的保护，你可以通过 @EnableResourceServer 注解到一个 @Configuration 配置类上，并且必须使用 ResourceServerConfigurer 这个配置对象来进行配置（可以选择继承自 ResourceServerConfigurerAdapter 然后覆写其中的方法，参数就是这个对象的实例），下面是一些可以配置的属性：
 
@@ -281,7 +281,7 @@ public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws 
 
 ---
 
-# 使用配置
+## 使用配置
 
 1.简易的分为三个步骤
 
@@ -298,7 +298,7 @@ public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws 
 
 以下重点讲解接口对接中常使用的密码模式（以下简称password模式）和客户端模式（以下简称client模式）。授权码模式使用到了回调地址，是最为复杂的方式，通常网站中经常出现的微博，qq第三方登录，都会采用这个形式。简化模式不常用。
 
-> #### 项目准备
+> ### 项目准备
 
 主要的maven依赖如下
 
@@ -432,7 +432,7 @@ public class OAuth2ServerConfig {
 }
 ```
 
-> #### spring security oauth2的认证思路
+> ### spring security oauth2的认证思路
 
 - client模式，没有用户的概念，直接与认证服务器交互，用配置中的客户端信息去申请accessToken，客户端有自己的client_id,client_secret对应于用户的username,password，而客户端也拥有自己的authorities，当采取client模式认证时，对应的权限也就是客户端自己的authorities。
 - password模式，自己本身有一套用户体系，在认证时需要带上自己的用户名和密码，以及客户端的client_id,client_secret。此时，accessToken所包含的权限是用户本身的权限，而不是客户端的权限。
