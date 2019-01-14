@@ -5,7 +5,9 @@ category: Blog
 tags: [Swagger2,SpringFox]
 ---
 
-> springfox 是什么
+## Springfox 简介
+
+### Springfox 是什么
 
 `springfox`的前身是`swagger-springmvc`，用于`springmvc`与`swagger`的整合
 
@@ -266,11 +268,12 @@ public ResponseEntity<Json> getDocumentation(
 }
 ```
 
->  引入springfox带来的影响
+>  引入springfox带来的影响
 
 影响主要有2点：
 
 1. 应用启动速度变慢，因为额外加载了springfox中的信息，同时内存中也缓存了这些API信息
+
 2. 多了一个HandlerMapping，并且优先级高。`其中springfox构造的PropertySourcedRequestMappingHandlerMapping优先级最高`。优先级最高说明第一次查询映射关系都是走PropertySourcedRequestMappingHandlerMapping，而程序中大部分请求Path路径都映射到RequestMappingHandlerMapping中处理的,所以进入到PropertySourcedRequestMappingHandlerMapping处理的请求会报：
 
    ![did not find handler](http://onekook.com/bower_components/extend/images/did%20not%20find%20handler.png)
@@ -299,7 +302,9 @@ public Object postProcessAfterInitialization(Object bean, String beanName) throw
 
 ---
 
-> BeanPostProcessor是什么
+## BeanPostProcessor简介
+
+### BeanPostProcessor是什么
 
 BeanPostProcessor接口作用是：**如果我们需要在Spring容器完成Bean的实例化、配置和其他的初始化前后添加一些自己的逻辑处理，我们就可以定义一个或者多个BeanPostProcessor接口的实现，然后注册到容器中。**
 
@@ -315,34 +320,34 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 //让Spring加载到该类
 @Component
 public class MyBeanPostProcessor implements BeanPostProcessor {  
-   
+
      public MyBeanPostProcessor() {  
         super();  
         System.out.println("这是BeanPostProcessor实现类构造器！！");          
      }  
-   
+
      @Override  
      public Object postProcessAfterInitialization(Object bean, String arg1)  
              throws BeansException {  
          System.out.println("bean处理器：bean创建之后..");  
          return bean;  
      }  
-   
+
      @Override  
      public Object postProcessBeforeInitialization(Object bean, String arg1)  
              throws BeansException {  
          System.out.println("bean处理器：bean创建之前..");  
-       
+
          return bean;  
      }  
- }  
+ }
 ```
 
 BeanPostProcessor接口定义如下：
 
 ```java
 public interface BeanPostProcessor {  
-  
+
     /** 
      * Apply this BeanPostProcessor to the given new bean instance <i>before</i> any bean 
      * initialization callbacks (like InitializingBean's {@code afterPropertiesSet} 
@@ -350,8 +355,8 @@ public interface BeanPostProcessor {
      */  
 //实例化、依赖注入完毕，在调用显示的初始化之前完成一些定制的初始化任务  
     Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException;  
-  
-      
+
+
     /** 
      * Apply this BeanPostProcessor to the given new bean instance <i>after</i> any bean 
      * initialization callbacks (like InitializingBean's {@code afterPropertiesSet}   
@@ -359,8 +364,8 @@ public interface BeanPostProcessor {
      */  
 //实例化、依赖注入、初始化完毕时执行  
     Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException;  
-  
-}  
+
+}
 ```
 
 由方法名字也可以看出，前者在实例化及依赖注入完成后、在任何初始化代码（比如配置文件中的init-method）调用之前调用；后者在初始化代码调用之后调用。
@@ -382,7 +387,7 @@ public interface BeanPostProcessor {
  * will always be applied after programmatically registered ones.  
  * @param beanPostProcessor the post-processor to register  
  */    
-void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);  
+void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
 ```
 
 另外，不要将BeanPostProcessor标记为延迟初始化。因为如果这样做，Spring容器将不会注册它们，自定义逻辑也就无法得到应用。假如你在<beans />元素的定义中使用了'default-lazy-init'属性，请确信你的各个BeanPostProcessor标记为'lazy-init="false"'。
@@ -393,23 +398,23 @@ InstantiationAwareBeanPostProcessor是BeanPostProcessor的子接口，可以在B
 
 ```java
 package org.springframework.beans.factory.config;    
-    
+
 import java.beans.PropertyDescriptor;    
-    
+
 import org.springframework.beans.BeansException;    
 import org.springframework.beans.PropertyValues;    
-    
+
 public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {    
-    
+
     Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException;    
-    
+
     boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException;    
-    
+
     PropertyValues postProcessPropertyValues(    
             PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName)    
             throws BeansException;    
-    
-}  
+
+}
 ```
 
 其使用方法与上面介绍的BeanPostProcessor接口类似，只时回调时机不同。
