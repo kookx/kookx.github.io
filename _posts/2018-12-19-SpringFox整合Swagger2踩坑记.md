@@ -5,9 +5,11 @@ category: Blog
 tags: [Swagger2,SpringFox]
 ---
 
-> 1.原项目Spring-4.0.2，整合Swagger2后升级为4.3.8后，项目里CXF-2.4.3报错不兼容
+## 主要问题
 
-        问题及解决方案
+### 1.原项目Spring-4.0.2，整合Swagger2后升级为4.3.8后，项目里CXF-2.4.3报错不兼容
+
+> 问题及解决方案
 
 1. 提示NoSuchMethod.isCglibProxyClass，Spring高版本移除掉了，这个类在spring-aop包中，建议一致更新高版本解决依赖。
 
@@ -19,9 +21,9 @@ tags: [Swagger2,SpringFox]
 
 ---
 
-> 2.依赖丢失
+## 2.依赖丢失
 
-#### 添加依赖
+ `添加依赖`
 
 ```haxe
         <dependency>
@@ -106,9 +108,9 @@ tags: [Swagger2,SpringFox]
         </dependency>
 ```
 
-> 3.swagger被拦截器拦截
+### 3.swagger被拦截器拦截
 
-        修改SwaggerConfig配置类,excludePathPatterns("/swagger-ui.html","/v2/api-docs","/swagger-resources/**","/webjars/**");添加所有swagger需要用到的资源，绕过拦截。
+> 修改SwaggerConfig配置类,excludePathPatterns("/swagger-ui.html","/v2/api-docs","/swagger-resources/**","/webjars/**");添加所有swagger需要用到的资源，绕过拦截。
 
 ```java
 import org.springframework.context.annotation.Configuration;
