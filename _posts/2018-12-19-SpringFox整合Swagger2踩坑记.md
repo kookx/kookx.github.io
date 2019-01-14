@@ -5,7 +5,7 @@ category: Blog
 tags: [Swagger2,SpringFox]
 ---
 
-## 主要问题
+## 踩坑点
 
 ### 1.原项目Spring-4.0.2，整合Swagger2后升级为4.3.8后，项目里CXF-2.4.3报错不兼容
 
@@ -23,7 +23,7 @@ tags: [Swagger2,SpringFox]
 
 ## 2.依赖丢失
 
- `添加依赖`
+ `添加依赖`
 
 ```haxe
         <dependency>
