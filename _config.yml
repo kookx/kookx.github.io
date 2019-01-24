@@ -49,6 +49,7 @@ kramdown:
 
 # Disqus
 disqus: onekook.disqus.com
+enable_comments: true
 
 # Pagination
 paginate: 10
