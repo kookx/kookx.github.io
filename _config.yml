@@ -48,7 +48,7 @@ kramdown:
   enable_coderay: true
 
 # Disqus
-disqus: my_disqus_settings # ex. httpdongchuangithubio.disqus.com
+disqus: onekook.disqus.com
 
 # Pagination
 paginate: 10
