@@ -48,19 +48,19 @@ kramdown:
   enable_coderay: true
 
 # Disqus
-disqus: onekook.disqus.com
+discuss: onekook.disqus.com
 
 enable_comments: true
 
 comments_provider: gitalk
 
 gitalk:
-    owner: kookone
-    repo: kookone.github.io
-    clientID: Iv1.17567d9b90755e0f
-    clientSecret: df319cc3400bb361d82d40fe86396f624c4df57d
+  owner: kookone
+  repo: kookone.github.io
+  clientID: Iv1.17567d9b90755e0f
+  clientSecret: df319cc3400bb361d82d40fe86396f624c4df57d
 # 在使用其它评论组件时可点击显示 Disqus
-lazy_load_disqus : true
+lazy_load_disqus: true
 # Pagination
 paginate: 10
 paginate_path: 'page:num'
