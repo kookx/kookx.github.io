@@ -579,11 +579,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 password模式：
 
-![password模式](http://onekook.com/bower_components/extend/images/spring-security-oauth2-xjf-1-1.png)
+![password模式](http://onekook.me/bower_components/extend/images/spring-security-oauth2-xjf-1-1.png)
 
 client模式：
 
-![client模式](http://onekook.com/bower_components/extend/images/spring-security-oauth2-xjf-1-2.png)
+![client模式](http://onekook.me/bower_components/extend/images/spring-security-oauth2-xjf-1-2.png)
 
 和我们的配置是一致的，仔细看可以发现两者的身份有些许的不同。想要查看更多的debug信息，可以选择下载demo代码自己查看，为了方便读者调试和验证，我去除了很多复杂的特性，基本实现了一个最简配置，涉及到数据库的地方也尽量配置到了内存中，这点记住在实际使用时一定要修改。
 
