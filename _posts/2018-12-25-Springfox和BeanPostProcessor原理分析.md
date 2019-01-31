@@ -24,7 +24,7 @@ tags: [Swagger2,SpringFox]
 
 > springfox如何定义Documentation：
 
-![springfox](http://onekook.com/bower_components/extend/images/springfox.jpg)
+![springfox](http://onekook.me/bower_components/extend/images/springfox.jpg)
 
 文档Documentation定义得很清晰，主要由groupName(分组名)、basePath(contextPath)、apiListings(API列表集)、resourceListing(资源列表集)等属性组成。
 
@@ -34,7 +34,7 @@ tags: [Swagger2,SpringFox]
 
 下图就是部分Plugin具体构造对应的文档信息：
 
-![plugin](http://onekook.com/bower_components/extend/images/plugin.jpg)
+![plugin](http://onekook.me/bower_components/extend/images/plugin.jpg)
 
 代码细节方面的分析：
 
@@ -192,7 +192,7 @@ public void start() {
 }
 ```
 
-![SpringFox API 扫描过程](http://kookone.github.io/bower_components/extend/images/springfox-1.jpg)
+![SpringFox API 扫描过程](http://onekook.me/bower_components/extend/images/springfox-1.jpg)
 
 下面分析一下HandlerMapping的处理过程。
 
@@ -276,15 +276,15 @@ public ResponseEntity<Json> getDocumentation(
 
 2. 多了一个HandlerMapping，并且优先级高。`其中springfox构造的PropertySourcedRequestMappingHandlerMapping优先级最高`。优先级最高说明第一次查询映射关系都是走PropertySourcedRequestMappingHandlerMapping，而程序中大部分请求Path路径都映射到RequestMappingHandlerMapping中处理的,所以进入到PropertySourcedRequestMappingHandlerMapping处理的请求会报：
 
-   ![did not find handler](http://onekook.com/bower_components/extend/images/did%20not%20find%20handler.png)
+   ![did not find handler](http://onekook.me/bower_components/extend/images/did%20not%20find%20handler.png)
 
    而默认的path值为/v2/api-docs则会成功处理：
 
-   ![success-find-handler](http://onekook.com/bower_components/extend/images/success-find-handler.png)
+   ![success-find-handler](http://onekook.me/bower_components/extend/images/success-find-handler.png)
 
    以下是springboot应用DispatcherServlet的HandlerMapping集合：
 
-![PropertySourcedRequestMappingHandlerMapping优先级](http://kookone.github.io/bower_components/extend/images/PropertySourcedRequestMappingHandlerMapping.jpg)
+![PropertySourcedRequestMappingHandlerMapping优先级](http://onekook.me/bower_components/extend/images/PropertySourcedRequestMappingHandlerMapping.jpg)
 
 优先级问题可以使用BeanPostProcessor处理，修改优先级：
 
@@ -310,7 +310,7 @@ BeanPostProcessor接口作用是：**如果我们需要在Spring容器完成Bean
 
 Spring中Bean的实例化过程图示：
 
-![BeanPostProcessor](http://onekook.com/bower_components/extend/images/BeanPostProcesser.jpg)
+![BeanPostProcessor](http://onekook.me/bower_components/extend/images/BeanPostProcesser.jpg)
 
 由上图可以看到，Spring中的BeanPostProcessor在实例化过程处于的位置，BeanPostProcessor接口有两个方法需要实现：postProcessBeforeInitialization和postProcessAfterInitialization
 
