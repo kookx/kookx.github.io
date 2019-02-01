@@ -57,8 +57,8 @@ comments_provider: gitalk
 gitalk:
   owner: kookone
   repo: kookone.github.io
-  clientID: d63dc8db8a80b775b3dc
-  clientSecret: 8c5eb6da61f440672a3133455ab5ad60d31764d9
+  clientID: 328d2373a8e2964246c3
+  clientSecret: 5c5669bf128e10ecca80498b1b263273187faa68
 # 在使用其它评论组件时可点击显示 Disqus
 lazy_load_disqus: true
 # Pagination
