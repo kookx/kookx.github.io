@@ -31,4 +31,20 @@ Zookeeper支持集群模式，可以很容易的解决单点故障问题。
 
 Zookeeper实现了一个关于通用协调模式的开源共享存储库，能使开发者免于编写这类通用协议。
 
+### ZooKeeper的安装
 
+- **独立模式安装**
+
+Zookeeper的运行环境是需要java的，建议安装oracle的java6.
+
+可去官网下载一个稳定的版本，然后进行安装：[http://zookeeper.apache.org/](http://zookeeper.apache.org/)
+
+解压后在zookeeper的conf目录下创建配置文件zoo.cfg，里面的配置信息可参考统计目录下的zoo_sample.cfg文件，我们这里配置为：
+
+```properties
+tickTime=2000
+initLimit=10
+syncLimit=5
+dataDir=/opt/zookeeper-data/
+clientPort=2181
+```
