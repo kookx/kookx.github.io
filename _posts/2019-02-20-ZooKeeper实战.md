@@ -48,3 +48,13 @@ syncLimit=5
 dataDir=/opt/zookeeper-data/
 clientPort=2181
 ```
+
+**tickTime**：指定了ZooKeeper的基本时间单位（以毫秒为单位）；
+
+**initLimit**：指定了启动zookeeper时，zookeeper实例中的随从实例同步到领导实例的初始化连接时间限制，超出时间限制则连接失败（以tickTime为时间单位）；
+
+**syncLimit**：指定了zookeeper正常运行时，主从节点之间同步数据的时间限制，若超过这个时间限制，那么随从实例将会被丢弃；
+
+**dataDir**：zookeeper存放数据的目录；
+
+**clientPort**：用于连接客户端的端口。
