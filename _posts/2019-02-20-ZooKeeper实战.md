@@ -58,3 +58,17 @@ clientPort=2181
 **dataDir**：zookeeper存放数据的目录；
 
 **clientPort**：用于连接客户端的端口。
+
+- **启动一个本地的ZooKeeper实例**
+
+```bash
+% zkServer.sh start
+```
+
+检查ZooKeeper是否正在运行
+
+```bash
+echo ruok | nc localhost 2181
+```
+
+若是正常运行的话会打印“imok”。
