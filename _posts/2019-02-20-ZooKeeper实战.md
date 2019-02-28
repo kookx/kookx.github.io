@@ -72,3 +72,31 @@ echo ruok | nc localhost 2181
 ```
 
 若是正常运行的话会打印“imok”。
+
+### ZooKeeper监控
+
+- **远程JMX配置**
+
+默认情况下，zookeeper是支持本地的jmx监控的。若需要远程监控zookeeper，则需要进行进行如下配置。
+
+默认的配置有这么一行：
+
+```bash
+ZOOMAIN="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=$JMXLOCALONLY org.apache.zookeeper.server.quorum.QuorumPeerMain"
+```
+
+咱们在**$JMXLOCALONLY**后边添加jmx的相关参数配置：
+
+```bash
+ZOOMAIN="-Dcom.sun.management.jmxremote
+        -Dcom.sun.management.jmxremote.local.only=$JMXLOCALONLY
+                -Djava.rmi.server.hostname=192.168.1.8
+                -Dcom.sun.management.jmxremote.port=1911
+                -Dcom.sun.management.jmxremote.ssl=false
+                -Dcom.sun.management.jmxremote.authenticate=false
+                 org.apache.zookeeper.server.quorum.QuorumPeerMain"
+```
+
+这样就可以远程监控了，可以用jconsole.exe或jvisualvm.exe等工具对其进行监控。
+
+
