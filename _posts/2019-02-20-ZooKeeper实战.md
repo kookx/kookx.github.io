@@ -99,4 +99,10 @@ ZOOMAIN="-Dcom.sun.management.jmxremote
 
 这样就可以远程监控了，可以用jconsole.exe或jvisualvm.exe等工具对其进行监控。
 
+### ZooKeeper的存储模型
 
+Zookeeper的数据存储采用的是结构化存储，结构化存储是没有文件和目录的概念，里边的目录和文件被抽象成了节点（node），zookeeper里可以称为znode。Znode的层次结构如下图：
+
+![ZooKeeper层次结构](https://onekook.me/bower_components/extend/images/ZooKeeper-01.png)
+
+最上边的是根目录，下边分别是不同级别的子目录。
