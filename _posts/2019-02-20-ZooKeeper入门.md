@@ -123,4 +123,63 @@ Zookeeper的数据存储采用的是结构化存储，结构化存储是没有�
 
 可以使用zhandle_t指针来表示zk客户端，可用zookeeper_init方法来创建。可在ZK_HOME\src\c\src\ cli.c查看部分示例代码。
 
+### Zookeeper创建Znode
 
+Znode有两种类型：短暂的和持久的。短暂的znode在创建的客户端与服务器端断开（无论是明确的断开还是故障断开）连接时，该znode都会被删除；相反，持久的znode则不会。
+
+```java
+public class CreateGroup implements Watcher{
+    private static final int SESSION_TIMEOUT = 1000;//会话延时
+
+    private ZooKeeper zk = null;
+    private CountDownLatch countDownLatch = new CountDownLatch(1);//同步计数器
+
+    public void process(WatchedEvent event) {
+        if(event.getState() == KeeperState.SyncConnected){
+            countDownLatch.countDown();//计数器减一
+        }
+    }
+
+    /**
+     * 创建zk对象
+     * 当客户端连接上zookeeper时会执行process(event)里的countDownLatch.countDown()，计数器的值变为0，则countDownLatch.await()方法返回。
+     * @param hosts
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void connect(String hosts) throws IOException, InterruptedException {
+        zk = new ZooKeeper(hosts, SESSION_TIMEOUT, this);
+        countDownLatch.await();//阻塞程序继续执行
+    }
+    
+    /**
+     * 创建group
+     * 
+     * @param groupName 组名
+     * @throws KeeperException
+     * @throws InterruptedException
+     */
+    public void create(String groupName) throws KeeperException, InterruptedException {
+        String path = "/" + groupName;
+        String createPath = zk.create(path, null, Ids.OPEN_ACL_UNSAFE/*允许任何客户端对该znode进行读写*/, CreateMode.PERSISTENT/*持久化的znode*/);
+        System.out.println("Created " + createPath);
+    }
+    
+    /**
+     * 关闭zk
+     * @throws InterruptedException
+     */
+    public void close() throws InterruptedException {
+        if(zk != null){
+            try {
+                zk.close();
+            } catch (InterruptedException e) {
+                throw e;
+            }finally{
+                zk = null;
+                System.gc();
+            }
+        }
+    }
+}
+```
