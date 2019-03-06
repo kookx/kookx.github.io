@@ -151,7 +151,7 @@ public class CreateGroup implements Watcher{
         zk = new ZooKeeper(hosts, SESSION_TIMEOUT, this);
         countDownLatch.await();//阻塞程序继续执行
     }
-    
+
     /**
      * 创建group
      * 
@@ -164,13 +164,111 @@ public class CreateGroup implements Watcher{
         String createPath = zk.create(path, null, Ids.OPEN_ACL_UNSAFE/*允许任何客户端对该znode进行读写*/, CreateMode.PERSISTENT/*持久化的znode*/);
         System.out.println("Created " + createPath);
     }
-    
+
     /**
      * 关闭zk
      * @throws InterruptedException
      */
     public void close() throws InterruptedException {
         if(zk != null){
+            try {
+                zk.close();
+            } catch (InterruptedException e) {
+                throw e;
+            }finally{
+                zk = null;
+                System.gc();
+            }
+        }
+    }
+}
+```
+
+这里我们使用了同步计数器CountDownLatch，在connect方法中创建执行了zk = new ZooKeeper(hosts, SESSION_TIMEOUT, this);之后，下边接着调用了CountDownLatch对象的await方法阻塞，因为这是zk客户端不一定已经完成了与服务端的连接，在客户端连接到服务端时会触发观察者调用process()方法，我们在方法里边判断一下触发事件的类型，完成连接后计数器减一，connect方法中解除阻塞。
+
+还有两个地方需要注意：这里创建的znode的访问权限是open的，且该znode是持久化存储的。
+
+测试类如下：
+
+```java
+public class CreateGroupTest {
+    private static String hosts = "192.168.1.8";
+    private static String groupName = "zoo";
+    
+    private CreateGroup createGroup = null;
+    
+    /**
+     * init
+     * @throws InterruptedException 
+     * @throws KeeperException 
+     * @throws IOException 
+     */
+    @Before
+    public void init() throws KeeperException, InterruptedException, IOException {
+        createGroup = new CreateGroup();
+        createGroup.connect(hosts);
+    }
+    
+    @Test
+    public void testCreateGroup() throws KeeperException, InterruptedException {
+        createGroup.create(groupName);
+    }
+    
+    /**
+     * 销毁资源
+     */
+    @After
+    public void destroy() {
+        try {
+            createGroup.close();
+            createGroup = null;
+            System.gc();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+由于zk对象的创建和销毁代码是可以复用的，所以这里我们把它分装成了接口：
+
+```java
+/**
+ * 连接的观察者，封装了zk的创建等
+ * @author leo
+ *
+ */
+public class ConnectionWatcher implements Watcher {
+    private static final int SESSION_TIMEOUT = 5000;
+
+    protected ZooKeeper zk = null;
+    private CountDownLatch countDownLatch = new CountDownLatch(1);
+
+    public void process(WatchedEvent event) {
+        KeeperState state = event.getState();
+        
+        if(state == KeeperState.SyncConnected){
+            countDownLatch.countDown();
+        }
+    }
+    
+    /**
+     * 连接资源
+     * @param hosts
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void connection(String hosts) throws IOException, InterruptedException {
+        zk = new ZooKeeper(hosts, SESSION_TIMEOUT, this);
+        countDownLatch.await();
+    }
+    
+    /**
+     * 释放资源
+     * @throws InterruptedException
+     */
+    public void close() throws InterruptedException {
+        if (null != zk) {
             try {
                 zk.close();
             } catch (InterruptedException e) {
