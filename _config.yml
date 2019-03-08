@@ -12,8 +12,6 @@ favicon: favicon.png # Image must be in assets/images
 repository: kookone/kookone.github.io
 
 # The base hostname & protocol for your site
-# For local test, please use http://localhost:4000
-# For production, use your github page url.
 url: http://kookone.github.io
 
 ## Gem
