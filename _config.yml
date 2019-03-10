@@ -11,7 +11,6 @@ description: 是玩客亦是顽壳
 favicon: favicon.png # Image must be in assets/images
 repository: kookone/kookone.github.io
 
-# The base hostname & protocol for your site
 url: http://kookone.github.io
 
 ## Gem
