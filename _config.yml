@@ -13,7 +13,6 @@ repository: kookone/kookone.github.io
 
 url: http://kookone.github.io
 
-## Gem
 gems:
   - jekyll-paginate
   - jekyll-geo-pattern
