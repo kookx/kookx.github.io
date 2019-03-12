@@ -8,7 +8,7 @@ company_url: https://onekook.com
 github_url: https://github.com/kookone
 github_username: kookone
 description: 是玩客亦是顽壳
-favicon: favicon.png # Image must be in assets/images
+favicon: favicon.png
 repository: kookone/kookone.github.io
 
 url: http://kookone.github.io
