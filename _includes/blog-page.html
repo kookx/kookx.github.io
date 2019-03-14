@@ -2,7 +2,6 @@
 
     <div class="col-md-8">
 
-        <!-- Blog list -->
         <ul id="posts-list">
             {% for post in site.posts %}
             <li class="posts-list-item" data-title="{{post.title}}">
@@ -15,10 +14,8 @@
             {% endfor %}
         </ul>
 
-        <!-- Pagination -->
         {% include pagination.html %}
 
-        <!-- Comments -->
         {% include disqus-comments.html %}
 
     </div>
@@ -31,7 +28,6 @@
 <script>
     $(document).ready(function(){
 
-        // Enable bootstrap tooltip
         $("body").tooltip({ selector: '[data-toggle=tooltip]' });
 
     });
