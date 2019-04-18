@@ -1,4 +1,4 @@
-{% if site.enable_comments != false and page.comments%}
+{% if site.enable_comments != false %}
 
   {% if site.comments_provider != 'disqus' and site.lazy_load_disqus and site.disqus and site.disqus.username %}
     <a href="#" class="show_disqus_comment" onclick="return false;">Show Disqus Comments</a>
