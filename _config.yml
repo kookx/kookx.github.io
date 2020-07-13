@@ -1,18 +1,18 @@
-title: 是玩客亦是顽壳
-name: onekook
+title: kook的笔记
+name: kook
 email: onekook.me@gmail.com
 location: Hangzhou, China
 company: ONEKOOK
 company_url: https://onekook.com
-github_url: https://github.com/kookone
-github_username: kookone
-description: 是玩客亦是顽壳
+github_url: https://github.com/kookx
+github_username: kookx
+description: 聪明出于勤奋，天才在于积累
 favicon: favicon.png
-repository: kookone/kookone.github.io
+repository: kookx/kookx.github.io
 
-url: http://kookone.github.io
+url: http://kookx.github.io
 
-gems:
+plugins:
   - jekyll-paginate
   - jekyll-geo-pattern
   - rouge
@@ -69,23 +69,33 @@ navs:
     label: Home
 
   -
-    href: /Spring-Cloud
-    label: Spring-Cloud
+    href: /algorithm.html
+    label: Algorithm
+    target: _self
 
   -
-    href: /Kubernetes
-    label: Kubernetes
-
-  -
-    href: /blog
+    href: /blog.html
     label: Blog
+    target: _self
 
   -
-    href: /about
+    href: /about.html
     label: About
+    target: _self
+
+# # 该类目后续上传
+#   -
+#     href: /spring-cloud.html
+#     label: Spring Cloud
+#     target: _self
+# # 该类目后续上传
+#   -
+#     href: /kubernetes.html
+#     label: Kubernetes
+#     target: _self
 
 # Sidebar to show popular repo
-side_bar_repo_limit: 5 # Number of repos to show
+side_bar_repo_limit: 8 # Number of repos to show
 
 # Google Analytics
 analytics :
@@ -95,7 +105,6 @@ analytics :
 
 
 # For about.html. Fell free to create your own!
-skill_software_keywords: [Java, C, C#, PHP, MySQL, MongoDB, Oracle, Redis, SQLite, PL/SQL, Design Patterns, CI/CD]
-skill_j2ee_keywords: [Spring, Struct, Hibernet, MyBatis, Spring Cloud, Docker, Kubernetes]
-skill_web_keywords: [HTML, CSS, JS, JQuery, Ajax, AngularJS, NodeJS, ExpressJS, Symfony, Boostrap]
+skill_j2ee_keywords: [Java, MySQL, MongoDB, Oracle, Redis, Design Patterns, Spring, SpringBoot, MyBatis, Spring Cloud, Netty, Kafka, Docker, Kubernetes, DevOps]
+skill_web_keywords: [HTML5, CSS3, ES6, AngularJS, Vue.js, ReactJS, NodeJS, ExpressJS, Symfony, Boostrap]
 skill_mobile_app_keywords: [Android, iOS, Sketch UI Desgin]

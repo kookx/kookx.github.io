@@ -1,6 +1,6 @@
 <div class="about row">
 
-    <div class="col-md-8">
+    <div class="col-md-12">
 
         <h2>《当你的才华还撑不起你的野心的时候》——莫言</h2>
 
@@ -41,25 +41,12 @@
             <li>GitHub：<a href="{{ site.github_url }}">{{ site.github_url }}</a></li>
         </ul>
 
-        <h2>技术栈</h2>
-
-        {% if site.skill_software_keywords %}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">软件工程</h3>
-            </div>
-            <div class="panel-body">
-                {% for keyword in site.skill_software_keywords %}
-                <button class="btn btn-default" type="button">{{ keyword }}</button>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
+        <h2>承接</h2>
 
         {% if site.skill_j2ee_keywords %}
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">J2EE开发</h3>
+                <h3 class="panel-title">企业应用开发</h3>
             </div>
             <div class="panel-body">
                 {% for keyword in site.skill_j2ee_keywords %}
@@ -95,10 +82,9 @@
         </div>
         {% endif %}
 
-    </div>
-
-    <div class="col-md-4">
-        {% include sidebar-popular-repo.html %}
+        <div class="comment">
+            {% include disqus-comments.html %}
+        </div>
     </div>
 
 </div>
