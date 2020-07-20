@@ -18,13 +18,30 @@
                     + "</a></dt>");
 
             var children = $(this).nextUntil("h2", "h3")
-
             children.each(function( index ) {
                 $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
                         $(this).attr("id")
                         + ">"
                         + "&nbsp;&nbsp;- " + $(this).text()
                         + "</a></dd>");
+                
+                var children = $(this).nextUntil("h3", "h4")
+                children.each(function( index ) {
+                    $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                            $(this).attr("id")
+                            + ">"
+                            + "&nbsp;&nbsp;&nbsp;&nbsp;- " + $(this).text()
+                            + "</a></dd>");
+
+                    var children = $(this).nextUntil("h4", "h5")
+                    children.each(function( index ) {
+                        $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                                $(this).attr("id")
+                                + ">"
+                                + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- " + $(this).text()
+                                + "</a></dd>");
+                    });
+                });
             });
         });
 
